@@ -1,6 +1,6 @@
 package builder;
 
-import model.Car;
+import car.Car;
 
 public class Builder {
     private int power;

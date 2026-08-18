@@ -3,9 +3,9 @@ package model;
 import java.util.Objects;
 
 public class Car implements Comparable<Car> {
-    private int power;
-    private String model;
-    private int year;
+    private final int power;
+    private final String model;
+    private final int year;
 
     // Private constructor used by Builder
     private Car(int power, String model, int year) {

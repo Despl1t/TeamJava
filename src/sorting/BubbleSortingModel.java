@@ -1,4 +1,6 @@
 package sorting;
+import model.Car;
+import java.util.List;
 
 public class BubbleSortingModel implements Sorting{
     @Override

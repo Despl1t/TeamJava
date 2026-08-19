@@ -1,8 +1,8 @@
-package sorting;
+package strategy;
 import model.Car;
 import java.util.List;
 
-public class BubbleSortingPower implements Sorting{
+public class BubbleSortStrategyPower implements SortStrategy{
     @Override
     public void sortCustom(List<Car> carList){
         int length = carList.size();

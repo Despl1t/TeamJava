@@ -1,8 +1,8 @@
-package sorting;
+package strategy;
 import java.util.List;
 import model.Car;
 
 
-public interface Sorting {
+public interface SortStrategy {
     public void sortCustom(List<Car> carList);
 }

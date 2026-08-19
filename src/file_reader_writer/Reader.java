@@ -34,12 +34,12 @@ public class Reader {
                     }
 
                     try {
-                        int hoursePower = Integer.parseInt(parts[0].trim());
+                        int horsePower = Integer.parseInt(parts[0].trim());
                         String model = parts[1].trim();
                         int year = Integer.parseInt(parts[2].trim());
 
                         Car candidate = new Car.Bilder()
-                                .setHorsePower(hoursePower)
+                                .setHorsePower(horsePower)
                                 .setModel(model)
                                 .setYear(year)
                                 .build();

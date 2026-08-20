@@ -1,5 +1,6 @@
 package random;
 import model.Car;
+import builder.Builder;
 import java.util.Random;
 import java.util.List;
 import java.util.Scanner;

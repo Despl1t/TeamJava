@@ -1,5 +1,9 @@
-package file_reader_writer;
+package fileReaderWriter;
 
+import car.Car;
+import car.CarList;
+import car.CarValidation;
+import builder.Builder;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -34,12 +38,12 @@ public class Reader {
                     }
 
                     try {
-                        int horsePower = Integer.parseInt(parts[0].trim());
+                        int Power = Integer.parseInt(parts[0].trim());
                         String model = parts[1].trim();
                         int year = Integer.parseInt(parts[2].trim());
 
-                        Car candidate = new Car.Bilder()
-                                .setHorsePower(horsePower)
+                        Car candidate = new Builder()
+                                .setPower(Power)
                                 .setModel(model)
                                 .setYear(year)
                                 .build();

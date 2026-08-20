@@ -1,5 +1,7 @@
-package file_reader_writer;
+package fileReaderWriter;
 
+import car.Car;
+import car.CarList;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,7 +9,7 @@ import java.io.IOException;
 //TODO реализовать запись отсортированных данных в файл с возможностью добавление данных в файл и его перезаписи
 
     //Записывает коллекцию автомобилей в файл в режиме добавления
-    //Каждая строка типа: hoursePower, model, year
+    //Каждая строка типа: Power, model, year
 
 public class Writer {
 
@@ -16,7 +18,7 @@ public class Writer {
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(path, true))) {
             for (int i = 0; i < list.size(); i++) {
                 Car car = list.get(i);
-                writer.write(car.geHorsePower+ ", " + car.getModel() + ", " + car.getYear());
+                writer.write(car.getPower+ ", " + car.getModel() + ", " + car.getYear());
                 writer.newLine();
             }
         }
@@ -26,7 +28,7 @@ public class Writer {
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(path, false))) {
             for (int i = 0; i < list.size(); i++) {
                 Car car = list.get(i);
-                writer.write(car.getHorsePower() + ", " + car.getModel() + ", " + car.getYear());
+                writer.write(car.getPower() + ", " + car.getModel() + ", " + car.getYear());
                 writer.newLine();
             }
         }

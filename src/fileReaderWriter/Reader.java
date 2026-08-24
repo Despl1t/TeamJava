@@ -76,7 +76,7 @@ public class Reader {
             StringBuilder sb = new StringBuilder();
             sb.append("Файл прочитан с ошибками:\n");
             errors.forEach(e -> sb.append("- ").append(e).append("\n"));
-            System.out.print(sb.toString());
+            System.out.print(sb);
         }
         System.out.println("Чтение файла " + path + " завершилось: \n- Добавлено " + carList.size() + " машин.");
         return carList;

@@ -71,7 +71,6 @@ public class Menu {
     }
 
     private void fillFromFile() {
-        String path = readNonEmptyLine("Введите путь к файлу: ");
         try {
             carList = Reader.readCarsFromFile();
             System.out.println("Загружено автомобилей: " + carList.size());

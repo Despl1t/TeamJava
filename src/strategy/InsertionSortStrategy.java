@@ -9,7 +9,7 @@ public class InsertionSortStrategy implements SortStrategy {
     @Override
     public void sortCustom(List<Car> carList, int param){
         if (param == 4){
-            SortEvenYears(carList);
+            sortEvenYears(carList);
             return;
         }
 
@@ -32,7 +32,7 @@ public class InsertionSortStrategy implements SortStrategy {
             default -> throw new IllegalArgumentException("Неизвестный параметр: " + param);
         };
     }
-    public void SortEvenYears(List<Car> carList){
+    public void sortEvenYears(List<Car> carList){
         List<Car> temp = new ArrayList<>();
         for (Car car : carList) {
             if (car.getYear() % 2 == 0) {

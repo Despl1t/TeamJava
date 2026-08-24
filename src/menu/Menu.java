@@ -8,10 +8,9 @@ import fileReaderWriter.Reader;
 import fileReaderWriter.Writer;
 import random.CustomRandom;
 import strategy.SortStrategy;
-import strategy.BubbleSortStrategyPower;
-import strategy.BubbleSortStrategyModel;
-import strategy.BubbleSortStrategyYear;
-import strategy.ExtraSortStrategyYear;
+import strategy.BubbleSortStrategy;
+import strategy.InsertionSortStrategy;
+import strategy.MergeSortStrategy;
 
 import java.io.IOException;
 import java.util.ArrayList;

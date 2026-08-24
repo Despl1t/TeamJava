@@ -1,3 +1,7 @@
+package model;
+
+import java.util.Objects;
+
 public final class Car implements Comparable<Car> {
     private final int power;
     private final String model;

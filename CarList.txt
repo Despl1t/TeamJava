@@ -1,0 +1,22 @@
+#CarList
+#power,model,year
+200,BMW X5,2020
+180,Toyota Camry,2019
+250,Mercedes C-Class,2021
+150,Kia Rio,2018
+300,Audi A6,2022
+220,Ford Focus,2020
+190,Hyundai Tucson,2019
+210,Volvo XC60,2021
+240,Lexus IS,2020
+170,Nissan Qashqai,2018
+260,Jaguar XF,2021
+160,Skoda Octavia,2019
+230,Mazda CX-5,2020
+280,Porsche Cayenne,2022
+140,Renault Logan,2017
+270,BMW 3 Series,2021
+195,Honda CR-V,2020
+205,Subaru Forester,2021
+290,Tesla Model 3,2022
+185,Mitsubishi Outlander,2019

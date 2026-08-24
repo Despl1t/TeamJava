@@ -74,7 +74,7 @@ public class Menu {
     private void fillFromFile() {
         String path = readNonEmptyLine("Введите путь к файлу: ");
         try {
-            carList = Reader.readCarsFromFile(path);
+            carList = Reader.readCarsFromFile();
             System.out.println("Загружено автомобилей: " + carList.size());
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
@@ -164,7 +164,7 @@ public class Menu {
         }
         String path = readNonEmptyLine("Введите путь к файлу (данные будут добавлены в конец файла): ");
         try {
-            Writer.appendCarsToFile(path, carList);
+            Writer.appendCarsToFile(carList);
             System.out.println("Данные добавлены в файл: " + path);
         } catch (IOException e) {
             System.out.println("Ошибка записи в файл: " + e.getMessage());

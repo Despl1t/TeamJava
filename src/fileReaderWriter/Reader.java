@@ -19,7 +19,7 @@ public class Reader {
     // Пример: 200,BMW X5,2020
 
     public static CarList readCarsFromFile() throws IOException {
-        Path path = Path.of("CarList.txt");
+        Path path = Path.of("CarsList.txt");
         CarList carList = new CarList();
         List<String> errors = new ArrayList<>();
 
@@ -51,23 +51,23 @@ public class Reader {
                             .build();
 
                     if (!CarValidation.isValidPower(power)) {
-                        String errorMessage = "Некорректно указана мощность";
+                        String errorMessage = "Некорректно указана мощность " + power;
                         errors.add("Строка " + lineNum + " не прошла валидацию: " + errorMessage);
                         continue;
 
                     } else if (!CarValidation.isValidModel(model)) {
-                        String errorMessage = "Некорректное название модели";
+                        String errorMessage = "Некорректное название модели " + model;
                         errors.add("Строка " + lineNum + " не прошла валидацию: " + errorMessage);
                         continue;
                     } else if (!CarValidation.isValidYear(year)) {
-                        String errorMessage = "Некорректно указан год";
+                        String errorMessage = "Некорректно указан год ";
                         errors.add("Строка " + lineNum + " не прошла валидацию: " + errorMessage);
                         continue;
                     }
                     carList.add(candidate);
 
                 } catch (NumberFormatException e) {
-                    errors.add("Строка " + lineNum + ": ошибка чтения '" + line + "'");
+                    errors.add("Строка " + lineNum + " ошибка чтения: " + line);
                 }
             }
         }
@@ -78,6 +78,7 @@ public class Reader {
             errors.forEach(e -> sb.append("- ").append(e).append("\n"));
             System.out.print(sb.toString());
         }
+        System.out.println("Чтение файла " + path + " завершилось: \n- Добавлено " + carList.size() + " машин.");
         return carList;
     }
 }

@@ -25,7 +25,6 @@ public class Menu {
     private final Scanner scanner = new Scanner(System.in);
     private CarList carList = new CarList();
 
-
     public void run() {
         boolean running = true;
         while (running) {
@@ -66,23 +65,29 @@ public class Menu {
             case 1 -> fillFromFile();
             case 2 -> fillRandom();
             case 3 -> fillManually();
-            case 4 -> { /* назад в меню */ }
+            case 4 -> { /* назад в главное меню */ }
             default -> System.out.println("Некорректный выбор.");
         }
     }
 
     private void fillFromFile() {
-        String path = readNonEmptyLine("Введите путь к файлу: ");
+        String path = readExistingFilePath("Введите путь к файлу: ");
         try {
-            carList = Reader.readCarsFromFile(path);
+            CarList loaded = Reader.readCarsFromFile(path);
+            if (loaded == null) {
+                System.out.println("Не удалось прочитать данные из файла: файл пуст или имеет неверный формат.");
+                return;
+            }
+            carList = loaded;
             System.out.println("Загружено автомобилей: " + carList.size());
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Файл повреждён или не соответствует ожидаемому формату: " + e.getMessage());
         }
     }
 
     private void fillRandom() {
-        // CustomRandom сам запрашивает у пользователя количество объектов через свой Scanner.
         CustomRandom generator = new CustomRandom();
         List<Car> buffer = new ArrayList<>();
         generator.FIllRandom(buffer);
@@ -155,14 +160,14 @@ public class Menu {
         }
     }
 
+    // ==================== Сохранение в файл (доп. задание 2) ====================
 
-
-    private void saveToFile() {                      // доп. задание 2, могу убрать если не надо
+    private void saveToFile() {
         if (carList.isEmpty()) {
             System.out.println("Массив пуст, нечего сохранять.");
             return;
         }
-        String path = readNonEmptyLine("Введите путь к файлу (данные будут добавлены в конец файла): ");
+        String path = readSavableFilePath("Введите путь к файлу (данные будут добавлены в конец файла): ");
         try {
             Writer.appendCarsToFile(path, carList);
             System.out.println("Данные добавлены в файл: " + path);
@@ -171,12 +176,21 @@ public class Menu {
         }
     }
 
-
+    private String readLine(String prompt) {
+        System.out.print(prompt);
+        try {
+            return scanner.nextLine().trim();
+        } catch (java.util.NoSuchElementException | IllegalStateException e) {
+            System.out.println();
+            System.out.println("Ввод неожиданно прервался. Завершение программы.");
+            System.exit(0);
+            return "";
+        }
+    }
 
     private int readIntInRange(String prompt, int min, int max) {
         while (true) {
-            System.out.print(prompt);
-            String line = scanner.nextLine().trim();
+            String line = readLine(prompt);
             try {
                 int value = Integer.parseInt(line);
                 if (value < min || value > max) {
@@ -192,8 +206,7 @@ public class Menu {
 
     private String readNonEmptyLine(String prompt) {
         while (true) {
-            System.out.print(prompt);
-            String line = scanner.nextLine().trim();
+            String line = readLine(prompt);
             if (!line.isEmpty()) {
                 return line;
             }
@@ -201,10 +214,50 @@ public class Menu {
         }
     }
 
+    private String readExistingFilePath(String prompt) {
+        while (true) {
+            String path = readNonEmptyLine(prompt);
+            java.io.File file = new java.io.File(path);
+            if (!file.exists()) {
+                System.out.println("Файл не найден по указанному пути. Попробуйте снова.");
+                continue;
+            }
+            if (!file.isFile()) {
+                System.out.println("Указанный путь ведёт не к файлу (возможно, это папка). Попробуйте снова.");
+                continue;
+            }
+            if (!file.canRead()) {
+                System.out.println("Нет прав на чтение этого файла. Попробуйте снова.");
+                continue;
+            }
+            return path;
+        }
+    }
+
+    private String readSavableFilePath(String prompt) {
+        while (true) {
+            String path = readNonEmptyLine(prompt);
+            java.io.File file = new java.io.File(path);
+            if (file.isDirectory()) {
+                System.out.println("Указанный путь ведёт на папку, а не на файл. Попробуйте снова.");
+                continue;
+            }
+            java.io.File parent = file.getParentFile();
+            if (parent != null && !parent.exists()) {
+                System.out.println("Указанной папки не существует. Попробуйте снова.");
+                continue;
+            }
+            if (file.exists() && !file.canWrite()) {
+                System.out.println("Нет прав на запись в этот файл. Попробуйте снова.");
+                continue;
+            }
+            return path;
+        }
+    }
+
     private int readValidatedInt(String prompt, IntPredicate validator) {
         while (true) {
-            System.out.print(prompt);
-            String line = scanner.nextLine().trim();
+            String line = readLine(prompt);
             try {
                 int value = Integer.parseInt(line);
                 if (!validator.test(value)) {
@@ -220,8 +273,7 @@ public class Menu {
 
     private String readValidatedString(String prompt, Predicate<String> validator) {
         while (true) {
-            System.out.print(prompt);
-            String line = scanner.nextLine().trim();
+            String line = readLine(prompt);
             if (!validator.test(line)) {
                 System.out.println("Значение не проходит валидацию. Попробуйте снова.");
                 continue;
@@ -230,9 +282,7 @@ public class Menu {
         }
     }
 
-
-
-    private List<Car> toList(CarList source) {           // CarList не реализует List, а SortStrategy и CustomRandom ждут List<Car> сделал мост между ними
+    private List<Car> toList(CarList source) {
         List<Car> result = new ArrayList<>();
         for (int i = 0; i < source.size(); i++) {
             result.add(source.get(i));

@@ -5,6 +5,7 @@ import car.CarList;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 
 //TODO реализовать запись отсортированных данных в файл с возможностью добавление данных в файл и его перезаписи
 
@@ -13,14 +14,16 @@ import java.io.IOException;
 
 public class Writer {
 
-    public static void appendCarsToFile(String path, CarList list)) throws IOExceprion {
+    public static void appendCarsToFile(Path path, CarList list) throws IOExceprion {
 
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(path, true))) {
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(path.toString(), true))) {
             for (int i = 0; i < list.size(); i++) {
                 Car car = list.get(i);
-                writer.write(car.getPower+ ", " + car.getModel() + ", " + car.getYear());
+                writer.write(car.getPower() + ", " + car.getModel() + ", " + car.getYear());
                 writer.newLine();
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
     public static void overwriteCarsToFile(String path, CarList list) throws IOException {

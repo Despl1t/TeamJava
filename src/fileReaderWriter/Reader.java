@@ -48,8 +48,8 @@ public class Reader {
                                 .setYear(year)
                                 .build();
 
-                        if (!CarValidator.isValid(candidate)) {
-                            var validationErrors = CarValidator.validateAndCollectErrors(candidate);
+                        if (!CarValidation.isValid(candidate)) {
+                            var validationErrors = CarValidation.isValid(candidate);
                             errors.add("Строка " + lineNum + "не прошла валидацию: " + String.join("; ", validationErrors));
                             continue;
                         }

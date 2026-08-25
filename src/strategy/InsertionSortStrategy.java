@@ -17,7 +17,7 @@ public class InsertionSortStrategy implements SortStrategy {
             Car key = carList.get(i);
             int j = i - 1;
             while(j >= 0 && comparison(carList, param, key, j)){
-                carList.set(j, carList.get(j + 1));
+                carList.set(j + 1, carList.get(j));
                 j--;
             }
             carList.set(j + 1, key);

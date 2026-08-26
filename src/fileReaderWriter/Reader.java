@@ -18,9 +18,9 @@ public class Reader {
     // формат строки horsepower,model,year
     // Пример: 200,BMW X5,2020
 
-    public static CarList readCarsFromFile() throws IOException {
+    public static CarList readCarsFromFile(CarList carList) throws IOException {
+
         Path path = Path.of("CarsList.txt");
-        CarList carList = new CarList();
         List<String> errors = new ArrayList<>();
 
         try (BufferedReader buffer = new BufferedReader(new FileReader(path.toString()))) {
@@ -74,11 +74,11 @@ public class Reader {
 
         if (!errors.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            sb.append("Файл прочитан с ошибками:\n");
+            sb.append("\nФайл прочитан с ошибками:\n");
             errors.forEach(e -> sb.append("- ").append(e).append("\n"));
             System.out.print(sb);
         }
-        System.out.println("Чтение файла " + path + " завершилось: \n- Добавлено " + carList.size() + " машин.");
+        System.out.println("Чтение файла " + path + " завершилось: \n- всего " + carList.size() + " машин.");
         return carList;
     }
 }

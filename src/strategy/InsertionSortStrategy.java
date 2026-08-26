@@ -1,6 +1,6 @@
 package strategy;
 
-import model.Car;
+import car.Car;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public class InsertionSortStrategy implements SortStrategy {
     @Override
     public void sortCustom(List<Car> carList, int param){
         if (param == 4){
-            sortEvenYears(carList);
+            SortEvenYears(carList);
             return;
         }
 
@@ -32,7 +32,7 @@ public class InsertionSortStrategy implements SortStrategy {
             default -> throw new IllegalArgumentException("Неизвестный параметр: " + param);
         };
     }
-    public void sortEvenYears(List<Car> carList){
+    public void SortEvenYears(List<Car> carList){
         List<Car> temp = new ArrayList<>();
         for (Car car : carList) {
             if (car.getYear() % 2 == 0) {

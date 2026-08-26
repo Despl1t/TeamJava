@@ -1,6 +1,7 @@
 package strategy;
 import java.util.List;
-import model.Car;
+import car.Car;
+
 
 public interface SortStrategy {
     public void sortCustom(List<Car> carList, int param);

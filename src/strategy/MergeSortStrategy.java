@@ -1,6 +1,6 @@
 package strategy;
 
-import model.Car;
+import car.Car;
 
 import java.util.ArrayList;
 import java.util.List;

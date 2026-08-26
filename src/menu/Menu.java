@@ -4,7 +4,9 @@ import builder.Builder;
 import car.Car;
 import car.CarList;
 import car.CarValidation;
+import fileReaderWriter.Load;
 import fileReaderWriter.Reader;
+import fileReaderWriter.Save;
 import fileReaderWriter.Writer;
 import random.CustomRandom;
 import strategy.BubbleSortStrategy;
@@ -25,16 +27,24 @@ public class Menu {
 
 
     public void run() {
+        try{
+            Load.readMemory(carList);
+            System.out.println("Продолжение работы с массивом.");
+        } catch (IOException e) {
+            System.out.println("Продолжение работы с массивом не возможно.");
+        }
+
         boolean running = true;
         while (running) {
             printMainMenu();
-            int choice = readIntInRange("Выберите пункт меню: ", 1, 5);
+            int choice = readIntInRange("Выберите пункт меню: ", 1, 6);
             switch (choice) {
                 case 1 -> fillArray();
                 case 2 -> sortArray();
                 case 3 -> printArray();
                 case 4 -> saveToFile();
-                case 5 -> running = false;
+                case 5 -> overwriteToFile();
+                case 6 -> running = false;
                 default -> System.out.println("Некорректный пункт меню.");
             }
         }
@@ -48,7 +58,8 @@ public class Menu {
         System.out.println("2. Отсортировать массив");
         System.out.println("3. Показать текущий массив");
         System.out.println("4. Сохранить массив в файл (добавление)");
-        System.out.println("5. Выход");
+        System.out.println("5. Сохранить массив в файл (перезапись файла)");
+        System.out.println("6. Выход");
     }
 
     private void fillArray() {
@@ -61,9 +72,30 @@ public class Menu {
         int choice = readIntInRange("Выберите способ заполнения: ", 1, 4);
 
         switch (choice) {
-            case 1 -> fillFromFile();
-            case 2 -> fillRandom();
-            case 3 -> fillManually();
+            case 1 -> {
+                fillFromFile();
+                try{
+                    Save.overwriteMemory(carList);
+                } catch (IOException e) {
+                    System.out.println("Ошибка сохранения в память программы.");
+                }
+            }
+            case 2 -> {
+                fillRandom();
+                try{
+                    Save.overwriteMemory(carList);
+                } catch (IOException e) {
+                    System.out.println("Ошибка сохранения в память программы.");
+                }
+            }
+            case 3 -> {
+                fillManually();
+                try{
+                    Save.overwriteMemory(carList);
+                } catch (IOException e) {
+                    System.out.println("Ошибка сохранения в память программы.");
+                }
+            }
             case 4 -> { /* назад в меню */ }
             default -> System.out.println("Некорректный выбор.");
         }
@@ -71,7 +103,7 @@ public class Menu {
 
     private void fillFromFile() {
         try {
-            carList = Reader.readCarsFromFile();
+            carList = Reader.readCarsFromFile(carList);
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
         }
@@ -115,7 +147,7 @@ public class Menu {
         System.out.println("1. По мощности");
         System.out.println("2. По модели");
         System.out.println("3. По году выпуска");
-        System.out.println("4. По году выпуска: чётные — сортируются, нечётные — остаются на месте (доп. задание 1)");
+        System.out.println("4. По году выпуска: чётные — сортируются, нечётные — остаются на месте.");
         System.out.println("5. Назад");
         int fieldChoice = readIntInRange("Выберите поле: ", 1, 5);
         if (fieldChoice == 5) {
@@ -147,6 +179,11 @@ public class Menu {
             case 2 -> new InsertionSortStrategy().sortCustom(buffer, param);
             case 3 -> new MergeSortStrategy().sortCustom(buffer, param);
         }
+        try{
+            Save.overwriteMemory(carList);
+        } catch (IOException e) {
+            System.out.println("Ошибка сохранения в память программы.");
+        }
         carList = fromList(buffer);
         System.out.println("Сортировка выполнена.");
     }
@@ -173,6 +210,19 @@ public class Menu {
         }
         try {
             Writer.appendCarsToFile(carList);
+            System.out.println("Данные добавлены в файл: SortedCarsList.txt");
+        } catch (IOException e) {
+            System.out.println("Ошибка записи в файл: " + e.getMessage());
+        }
+    }
+
+    private void overwriteToFile() {                      // доп. задание 2, могу убрать если не надо
+        if (carList.isEmpty()) {
+            System.out.println("Массив пуст, нечего сохранять.");
+            return;
+        }
+        try {
+            Writer.overwriteCarsToFile(carList);
             System.out.println("Данные добавлены в файл: SortedCarsList.txt");
         } catch (IOException e) {
             System.out.println("Ошибка записи в файл: " + e.getMessage());

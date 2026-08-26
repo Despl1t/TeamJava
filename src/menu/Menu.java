@@ -109,6 +109,7 @@ public class Menu {
         }
     }
 
+
     private void fillRandom() {
         CustomRandom generator = new CustomRandom();
         List<Car> buffer = new ArrayList<>();
@@ -116,6 +117,8 @@ public class Menu {
         carList = fromList(buffer);
         System.out.println("Сгенерировано автомобилей: " + carList.size());
     }
+
+
 
     private void fillManually() {
         int length = readIntInRange("Введите количество автомобилей для ввода: ", 1, 10_000);

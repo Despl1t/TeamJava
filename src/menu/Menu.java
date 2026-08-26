@@ -4,14 +4,14 @@ import builder.Builder;
 import car.Car;
 import car.CarList;
 import car.CarValidation;
+import fileReaderWriter.Load;
 import fileReaderWriter.Reader;
+import fileReaderWriter.Save;
 import fileReaderWriter.Writer;
 import random.CustomRandom;
-import strategy.SortStrategy;
-import strategy.BubbleSortStrategyPower;
-import strategy.BubbleSortStrategyModel;
-import strategy.BubbleSortStrategyYear;
-import strategy.ExtraSortStrategyYear;
+import strategy.BubbleSortStrategy;
+import strategy.InsertionSortStrategy;
+import strategy.MergeSortStrategy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,17 +25,26 @@ public class Menu {
     private final Scanner scanner = new Scanner(System.in);
     private CarList carList = new CarList();
 
+
     public void run() {
+        try{
+            Load.readMemory(carList);
+            System.out.println("Продолжение работы с массивом.");
+        } catch (IOException e) {
+            System.out.println("Продолжение работы с массивом не возможно.");
+        }
+
         boolean running = true;
         while (running) {
             printMainMenu();
-            int choice = readIntInRange("Выберите пункт меню: ", 1, 5);
+            int choice = readIntInRange("Выберите пункт меню: ", 1, 6);
             switch (choice) {
                 case 1 -> fillArray();
                 case 2 -> sortArray();
                 case 3 -> printArray();
                 case 4 -> saveToFile();
-                case 5 -> running = false;
+                case 5 -> overwriteToFile();
+                case 6 -> running = false;
                 default -> System.out.println("Некорректный пункт меню.");
             }
         }
@@ -49,7 +58,8 @@ public class Menu {
         System.out.println("2. Отсортировать массив");
         System.out.println("3. Показать текущий массив");
         System.out.println("4. Сохранить массив в файл (добавление)");
-        System.out.println("5. Выход");
+        System.out.println("5. Сохранить массив в файл (перезапись файла)");
+        System.out.println("6. Выход");
     }
 
     private void fillArray() {
@@ -62,28 +72,40 @@ public class Menu {
         int choice = readIntInRange("Выберите способ заполнения: ", 1, 4);
 
         switch (choice) {
-            case 1 -> fillFromFile();
-            case 2 -> fillRandom();
-            case 3 -> fillManually();
-            case 4 -> { /* назад в главное меню */ }
+            case 1 -> {
+                fillFromFile();
+                try{
+                    Save.overwriteMemory(carList);
+                } catch (IOException e) {
+                    System.out.println("Ошибка сохранения в память программы.");
+                }
+            }
+            case 2 -> {
+                fillRandom();
+                try{
+                    Save.overwriteMemory(carList);
+                } catch (IOException e) {
+                    System.out.println("Ошибка сохранения в память программы.");
+                }
+            }
+            case 3 -> {
+                fillManually();
+                try{
+                    Save.overwriteMemory(carList);
+                } catch (IOException e) {
+                    System.out.println("Ошибка сохранения в память программы.");
+                }
+            }
+            case 4 -> { /* назад в меню */ }
             default -> System.out.println("Некорректный выбор.");
         }
     }
 
     private void fillFromFile() {
-        String path = readExistingFilePath("Введите путь к файлу: ");
         try {
-            CarList loaded = Reader.readCarsFromFile(path);
-            if (loaded == null) {
-                System.out.println("Не удалось прочитать данные из файла: файл пуст или имеет неверный формат.");
-                return;
-            }
-            carList = loaded;
-            System.out.println("Загружено автомобилей: " + carList.size());
+            carList = Reader.readCarsFromFile(carList);
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
-        } catch (RuntimeException e) {
-            System.out.println("Файл повреждён или не соответствует ожидаемому формату: " + e.getMessage());
         }
     }
 
@@ -121,28 +143,47 @@ public class Menu {
         }
 
         System.out.println();
-        System.out.println("--- Сортировка ---");
+        System.out.println("--- Сортировка: поле ---");
         System.out.println("1. По мощности");
         System.out.println("2. По модели");
         System.out.println("3. По году выпуска");
-        System.out.println("4. По году выпуска: чётные — сортируются, нечётные — остаются на месте (доп. задание 1)");
+        System.out.println("4. По году выпуска: чётные — сортируются, нечётные — остаются на месте.");
         System.out.println("5. Назад");
-        int choice = readIntInRange("Выберите поле/алгоритм: ", 1, 5);
+        int fieldChoice = readIntInRange("Выберите поле: ", 1, 5);
+        if (fieldChoice == 5) {
+            return;
+        }
 
-        SortStrategy strategy = switch (choice) {
-            case 1 -> new BubbleSortStrategyPower();
-            case 2 -> new BubbleSortStrategyModel();
-            case 3 -> new BubbleSortStrategyYear();
-            case 4 -> new ExtraSortStrategyYear();
-            default -> null;
+        int param = switch (fieldChoice) {
+            case 1 -> 2;
+            case 2 -> 3;
+            case 3 -> 1;
+            case 4 -> 4;
+            default -> throw new IllegalStateException("Недостижимо: fieldChoice=" + fieldChoice);
         };
 
-        if (strategy == null) {
+        System.out.println();
+        System.out.println("--- Сортировка: алгоритм ---");
+        System.out.println("1. Сортировка пузырьком");
+        System.out.println("2. Сортировка вставками");
+        System.out.println("3. Сортировка слиянием");
+        System.out.println("4. Назад");
+        int algoChoice = readIntInRange("Выберите алгоритм: ", 1, 4);
+        if (algoChoice == 4) {
             return;
         }
 
         List<Car> buffer = toList(carList);
-        strategy.sortCustom(buffer);
+        switch (algoChoice) {
+            case 1 -> new BubbleSortStrategy().sortCustom(buffer, param);
+            case 2 -> new InsertionSortStrategy().sortCustom(buffer, param);
+            case 3 -> new MergeSortStrategy().sortCustom(buffer, param);
+        }
+        try{
+            Save.overwriteMemory(carList);
+        } catch (IOException e) {
+            System.out.println("Ошибка сохранения в память программы.");
+        }
         carList = fromList(buffer);
         System.out.println("Сортировка выполнена.");
     }
@@ -160,37 +201,40 @@ public class Menu {
         }
     }
 
-    // ==================== Сохранение в файл (доп. задание 2) ====================
 
-    private void saveToFile() {
+
+    private void saveToFile() {                      // доп. задание 2, могу убрать если не надо
         if (carList.isEmpty()) {
             System.out.println("Массив пуст, нечего сохранять.");
             return;
         }
-        String path = readSavableFilePath("Введите путь к файлу (данные будут добавлены в конец файла): ");
         try {
-            Writer.appendCarsToFile(path, carList);
-            System.out.println("Данные добавлены в файл: " + path);
+            Writer.appendCarsToFile(carList);
+            System.out.println("Данные добавлены в файл: SortedCarsList.txt");
         } catch (IOException e) {
             System.out.println("Ошибка записи в файл: " + e.getMessage());
         }
     }
 
-    private String readLine(String prompt) {
-        System.out.print(prompt);
+    private void overwriteToFile() {                      // доп. задание 2, могу убрать если не надо
+        if (carList.isEmpty()) {
+            System.out.println("Массив пуст, нечего сохранять.");
+            return;
+        }
         try {
-            return scanner.nextLine().trim();
-        } catch (java.util.NoSuchElementException | IllegalStateException e) {
-            System.out.println();
-            System.out.println("Ввод неожиданно прервался. Завершение программы.");
-            System.exit(0);
-            return "";
+            Writer.overwriteCarsToFile(carList);
+            System.out.println("Данные добавлены в файл: SortedCarsList.txt");
+        } catch (IOException e) {
+            System.out.println("Ошибка записи в файл: " + e.getMessage());
         }
     }
 
+
+
     private int readIntInRange(String prompt, int min, int max) {
         while (true) {
-            String line = readLine(prompt);
+            System.out.print(prompt);
+            String line = scanner.nextLine().trim();
             try {
                 int value = Integer.parseInt(line);
                 if (value < min || value > max) {
@@ -204,60 +248,10 @@ public class Menu {
         }
     }
 
-    private String readNonEmptyLine(String prompt) {
-        while (true) {
-            String line = readLine(prompt);
-            if (!line.isEmpty()) {
-                return line;
-            }
-            System.out.println("Строка не может быть пустой. Попробуйте снова.");
-        }
-    }
-
-    private String readExistingFilePath(String prompt) {
-        while (true) {
-            String path = readNonEmptyLine(prompt);
-            java.io.File file = new java.io.File(path);
-            if (!file.exists()) {
-                System.out.println("Файл не найден по указанному пути. Попробуйте снова.");
-                continue;
-            }
-            if (!file.isFile()) {
-                System.out.println("Указанный путь ведёт не к файлу (возможно, это папка). Попробуйте снова.");
-                continue;
-            }
-            if (!file.canRead()) {
-                System.out.println("Нет прав на чтение этого файла. Попробуйте снова.");
-                continue;
-            }
-            return path;
-        }
-    }
-
-    private String readSavableFilePath(String prompt) {
-        while (true) {
-            String path = readNonEmptyLine(prompt);
-            java.io.File file = new java.io.File(path);
-            if (file.isDirectory()) {
-                System.out.println("Указанный путь ведёт на папку, а не на файл. Попробуйте снова.");
-                continue;
-            }
-            java.io.File parent = file.getParentFile();
-            if (parent != null && !parent.exists()) {
-                System.out.println("Указанной папки не существует. Попробуйте снова.");
-                continue;
-            }
-            if (file.exists() && !file.canWrite()) {
-                System.out.println("Нет прав на запись в этот файл. Попробуйте снова.");
-                continue;
-            }
-            return path;
-        }
-    }
-
     private int readValidatedInt(String prompt, IntPredicate validator) {
         while (true) {
-            String line = readLine(prompt);
+            System.out.print(prompt);
+            String line = scanner.nextLine().trim();
             try {
                 int value = Integer.parseInt(line);
                 if (!validator.test(value)) {
@@ -273,7 +267,8 @@ public class Menu {
 
     private String readValidatedString(String prompt, Predicate<String> validator) {
         while (true) {
-            String line = readLine(prompt);
+            System.out.print(prompt);
+            String line = scanner.nextLine().trim();
             if (!validator.test(line)) {
                 System.out.println("Значение не проходит валидацию. Попробуйте снова.");
                 continue;
@@ -282,7 +277,9 @@ public class Menu {
         }
     }
 
-    private List<Car> toList(CarList source) {
+
+
+    private List<Car> toList(CarList source) {           // CarList не реализует List, а SortStrategy и CustomRandom ждут List<Car> сделал мост между ними
         List<Car> result = new ArrayList<>();
         for (int i = 0; i < source.size(); i++) {
             result.add(source.get(i));

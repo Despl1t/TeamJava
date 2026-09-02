@@ -4,10 +4,11 @@ import builder.Builder;
 import car.Car;
 import car.CarList;
 import car.CarValidation;
+import fileReaderWriter.Load;
 import fileReaderWriter.Reader;
+import fileReaderWriter.Save;
 import fileReaderWriter.Writer;
 import random.CustomRandom;
-import strategy.SortStrategy;
 import strategy.BubbleSortStrategy;
 import strategy.InsertionSortStrategy;
 import strategy.MergeSortStrategy;
@@ -26,16 +27,24 @@ public class Menu {
 
 
     public void run() {
+        try{
+            Load.readMemory(carList);
+            System.out.println("Продолжение работы с массивом.");
+        } catch (IOException e) {
+            System.out.println("Продолжение работы с массивом не возможно.");
+        }
+
         boolean running = true;
         while (running) {
             printMainMenu();
-            int choice = readIntInRange("Выберите пункт меню: ", 1, 5);
+            int choice = readIntInRange("Выберите пункт меню: ", 1, 6);
             switch (choice) {
                 case 1 -> fillArray();
                 case 2 -> sortArray();
                 case 3 -> printArray();
                 case 4 -> saveToFile();
-                case 5 -> running = false;
+                case 5 -> overwriteToFile();
+                case 6 -> running = false;
                 default -> System.out.println("Некорректный пункт меню.");
             }
         }
@@ -49,7 +58,8 @@ public class Menu {
         System.out.println("2. Отсортировать массив");
         System.out.println("3. Показать текущий массив");
         System.out.println("4. Сохранить массив в файл (добавление)");
-        System.out.println("5. Выход");
+        System.out.println("5. Сохранить массив в файл (перезапись файла)");
+        System.out.println("6. Выход");
     }
 
     private void fillArray() {
@@ -62,9 +72,30 @@ public class Menu {
         int choice = readIntInRange("Выберите способ заполнения: ", 1, 4);
 
         switch (choice) {
-            case 1 -> fillFromFile();
-            case 2 -> fillRandom();
-            case 3 -> fillManually();
+            case 1 -> {
+                fillFromFile();
+                try{
+                    Save.overwriteMemory(carList);
+                } catch (IOException e) {
+                    System.out.println("Ошибка сохранения в память программы.");
+                }
+            }
+            case 2 -> {
+                fillRandom();
+                try{
+                    Save.overwriteMemory(carList);
+                } catch (IOException e) {
+                    System.out.println("Ошибка сохранения в память программы.");
+                }
+            }
+            case 3 -> {
+                fillManually();
+                try{
+                    Save.overwriteMemory(carList);
+                } catch (IOException e) {
+                    System.out.println("Ошибка сохранения в память программы.");
+                }
+            }
             case 4 -> { /* назад в меню */ }
             default -> System.out.println("Некорректный выбор.");
         }
@@ -72,15 +103,13 @@ public class Menu {
 
     private void fillFromFile() {
         try {
-            carList = Reader.readCarsFromFile();
-            System.out.println("Загружено автомобилей: " + carList.size());
+            carList = Reader.readCarsFromFile(carList);
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
         }
     }
 
     private void fillRandom() {
-        // CustomRandom сам запрашивает у пользователя количество объектов через свой Scanner.
         CustomRandom generator = new CustomRandom();
         List<Car> buffer = new ArrayList<>();
         generator.FIllRandom(buffer);
@@ -114,28 +143,47 @@ public class Menu {
         }
 
         System.out.println();
-        System.out.println("--- Сортировка ---");
+        System.out.println("--- Сортировка: поле ---");
         System.out.println("1. По мощности");
         System.out.println("2. По модели");
         System.out.println("3. По году выпуска");
-        System.out.println("4. По году выпуска: чётные — сортируются, нечётные — остаются на месте (доп. задание 1)");
+        System.out.println("4. По году выпуска: чётные — сортируются, нечётные — остаются на месте.");
         System.out.println("5. Назад");
-        int choice = readIntInRange("Выберите поле/алгоритм: ", 1, 5);
+        int fieldChoice = readIntInRange("Выберите поле: ", 1, 5);
+        if (fieldChoice == 5) {
+            return;
+        }
 
-        SortStrategy strategy = switch (choice) {
-            case 1 -> new BubbleSortStrategyPower();
-            case 2 -> new BubbleSortStrategyModel();
-            case 3 -> new BubbleSortStrategyYear();
-            case 4 -> new ExtraSortStrategyYear();
-            default -> null;
+        int param = switch (fieldChoice) {
+            case 1 -> 2;
+            case 2 -> 3;
+            case 3 -> 1;
+            case 4 -> 4;
+            default -> throw new IllegalStateException("Недостижимо: fieldChoice=" + fieldChoice);
         };
 
-        if (strategy == null) {
+        System.out.println();
+        System.out.println("--- Сортировка: алгоритм ---");
+        System.out.println("1. Сортировка пузырьком");
+        System.out.println("2. Сортировка вставками");
+        System.out.println("3. Сортировка слиянием");
+        System.out.println("4. Назад");
+        int algoChoice = readIntInRange("Выберите алгоритм: ", 1, 4);
+        if (algoChoice == 4) {
             return;
         }
 
         List<Car> buffer = toList(carList);
-        strategy.sortCustom(buffer);
+        switch (algoChoice) {
+            case 1 -> new BubbleSortStrategy().sortCustom(buffer, param);
+            case 2 -> new InsertionSortStrategy().sortCustom(buffer, param);
+            case 3 -> new MergeSortStrategy().sortCustom(buffer, param);
+        }
+        try{
+            Save.overwriteMemory(carList);
+        } catch (IOException e) {
+            System.out.println("Ошибка сохранения в память программы.");
+        }
         carList = fromList(buffer);
         System.out.println("Сортировка выполнена.");
     }
@@ -155,15 +203,27 @@ public class Menu {
 
 
 
-    private void saveToFile() {                      // доп. задание 2, могу убрать если не надо
+    private void saveToFile() {
         if (carList.isEmpty()) {
             System.out.println("Массив пуст, нечего сохранять.");
             return;
         }
-        String path = readNonEmptyLine("Введите путь к файлу (данные будут добавлены в конец файла): ");
         try {
             Writer.appendCarsToFile(carList);
-            System.out.println("Данные добавлены в файл: " + path);
+            System.out.println("Данные добавлены в файл: SortedCarsList.txt");
+        } catch (IOException e) {
+            System.out.println("Ошибка записи в файл: " + e.getMessage());
+        }
+    }
+
+    private void overwriteToFile() {
+        if (carList.isEmpty()) {
+            System.out.println("Массив пуст, нечего сохранять.");
+            return;
+        }
+        try {
+            Writer.overwriteCarsToFile(carList);
+            System.out.println("Данные добавлены в файл: SortedCarsList.txt");
         } catch (IOException e) {
             System.out.println("Ошибка записи в файл: " + e.getMessage());
         }
@@ -185,17 +245,6 @@ public class Menu {
             } catch (NumberFormatException e) {
                 System.out.println("Некорректный ввод. Введите целое число.");
             }
-        }
-    }
-
-    private String readNonEmptyLine(String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String line = scanner.nextLine().trim();
-            if (!line.isEmpty()) {
-                return line;
-            }
-            System.out.println("Строка не может быть пустой. Попробуйте снова.");
         }
     }
 

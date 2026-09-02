@@ -41,11 +41,11 @@ public final class Car implements Comparable<Car> {
 
     @Override
     public String toString() {
-        return "Автомобиль{" +
-                "мощность=" + power +
-                ", модель='" + model + '\'' +
-                ", год=" + year +
-                '}';
+        return "Автомобиль: " +
+                "Мощность - " + power +
+                ", Модель - " + model +
+                ", " + year + " г.";
+
     }
 
     @Override

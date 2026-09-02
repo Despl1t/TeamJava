@@ -10,7 +10,7 @@ public class CarList {
 
     public void add(Car car) {
         if (car == null) {
-            throw new IllegalArgumentException("Автомобиль не может быть null");
+            System.err.println("Автомобиль не может быть null");
         }
         cars.add(car);
     }
@@ -21,7 +21,7 @@ public class CarList {
 
     public void set(int index, Car car) {
         if (car == null) {
-            throw new IllegalArgumentException("Автомобиль не может быть null");
+            System.err.println("Автомобиль не может быть null");
         }
 
         cars.set(index, car);

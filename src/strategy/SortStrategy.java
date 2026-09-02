@@ -4,5 +4,5 @@ import car.Car;
 
 
 public interface SortStrategy {
-    public void sortCustom(List<Car> carList);
+    public void sortCustom(List<Car> carList, int param);
 }

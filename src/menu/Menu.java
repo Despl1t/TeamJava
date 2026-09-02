@@ -31,7 +31,7 @@ public class Menu {
             Load.readMemory(carList);
             System.out.println("Продолжение работы с массивом.");
         } catch (IOException e) {
-            System.out.println("Продолжение работы с массивом не возможно.");
+            System.out.println("Продолжение работы с массивом невозможно.");
         }
 
         boolean running = true;
@@ -179,13 +179,14 @@ public class Menu {
             case 2 -> new InsertionSortStrategy().sortCustom(buffer, param);
             case 3 -> new MergeSortStrategy().sortCustom(buffer, param);
         }
+        carList = fromList(buffer);
+        System.out.println("Сортировка выполнена.");
+
         try{
             Save.overwriteMemory(carList);
         } catch (IOException e) {
             System.out.println("Ошибка сохранения в память программы.");
         }
-        carList = fromList(buffer);
-        System.out.println("Сортировка выполнена.");
     }
 
 
